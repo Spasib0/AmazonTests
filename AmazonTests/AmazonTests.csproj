@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>Uiconstock-Socialmedia-Amazon.ico</ApplicationIcon>
     <StartupObject />
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
 </Project>

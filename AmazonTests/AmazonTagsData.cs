@@ -22,7 +22,8 @@ namespace AmazonTests
                                     & AllProductTagsValide()
                                     & AllOsTagsValide()
                                     & AllLanguageAndLanguagesTagsValide()
-                                    & AllVersionTagsIsValide();
+                                    & AllVersionTagsIsValide()
+                                    & AllMasterTagsIsValide();
 
         }
 
@@ -70,6 +71,13 @@ namespace AmazonTests
             Print($"\n***AllVersionTagsIsValide***");
 
             return CheckTags("version", (string version) => int.TryParse(version, out int _));
+        }
+
+        private bool AllMasterTagsIsValide()
+        {
+            Print($"\n***AllMasterTagsIsValide***");
+
+            return CheckTags("master", (string master) => bool.TryParse(master, out bool _), true);
         }
 
         private void Setup()
