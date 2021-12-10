@@ -10,15 +10,26 @@ namespace AmazonTests
         private List<S3Object> _bucketItems = new List<S3Object>();
         private string[] _statisticsProducts;
         private string[] _valideLanguages;
+        private readonly string[] VALIDE_TAG_KEYS = new string[] { PRODUCT, OS, LANGUAGE, LANGUAGES, VERSION, MASTER, WHATS_NEW, TITLE };
         private readonly string[] VALIDE_OS = new string[] { "Windows", "Windows x64", "Windows x32" };
         private readonly string[] NAUROBO_FIRMWARES = new string[] { "robots" }; //Прошивки для NAUROBO (на них есть ссылки в README)
         private IEnumerable<string> ValideProducts => _statisticsProducts.Concat(NAUROBO_FIRMWARES);
+
+        private const string PRODUCT = "product";
+        private const string OS = "os";
+        private const string LANGUAGE = "language";
+        private const string LANGUAGES = "languages";
+        private const string VERSION = "version";
+        private const string MASTER = "master";
+        private const string TITLE = "title";
+        private const string WHATS_NEW = "whats-new";
 
         public bool Test()
         {
             Setup();
 
             return BucketHasItems() & AllItemsHasTags()
+                                    & AllTagKeysValide()
                                     & AllProductTagsValide()
                                     & AllOsTagsValide()
                                     & AllLanguageAndLanguagesTagsValide()
@@ -34,7 +45,6 @@ namespace AmazonTests
             return _bucketItems.Count > 0;
         }
 
-
         private bool AllItemsHasTags()
         {
             Print($"\n***AllItemsHasTags***");
@@ -42,6 +52,33 @@ namespace AmazonTests
             return _bucketItems.TrueForAll(item => item.Tags.Count > 0);
         }
 
+        private bool AllTagKeysValide()
+        {
+            Print($"\n***AllTagKeysValide***");
+            bool passed = true;
+
+            foreach(var item in _bucketItems)
+            {
+                var info = $"\t{item.Key} has not valide tags:\n";
+                var invalidTags = "";
+
+                foreach(var tag in item.Tags)
+                {
+                    if (!VALIDE_TAG_KEYS.Contains(tag.Key))
+                    {
+                        invalidTags += $"\t\t{tag.Key}\n";
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(invalidTags))
+                {
+                    passed = false;
+                    Print(info + invalidTags);
+                }
+            }
+
+            return passed;
+        }
 
         private bool AllProductTagsValide()
         {
@@ -49,7 +86,6 @@ namespace AmazonTests
 
             return CheckTags("product", (string product) => ValideProducts.Contains(product));
         }
-
 
         private bool AllOsTagsValide()
         {
